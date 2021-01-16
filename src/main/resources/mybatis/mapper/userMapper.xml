@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.workingman.mapper.UserMapper">
+    <resultMap id="users" type="UserBean">
+        <id column="uid" property="id"/>
+        <result column="name" property="name"/>
+        <result column="phone" property="phone"/>
+        <result column="state" property="state"/>
+        <collection property="roles" ofType="com.workingman.javaBean.RoleBean">
+            <id column="rid" property="id"/>
+            <result column="role" property="role"/>
+        </collection>
+    </resultMap>
+    <select id="getUserByPhone" resultType="UserBean">
+        select * from users where phone=#{phone};
+    </select>
+    <insert id="insertUser" useGeneratedKeys="true" keyProperty="id">
+        insert into users (name,password,phone,state) values (#{name},#{password},#{phone},#{state})
+    </insert>
+    <update id="changePassword">
+        update users set password=#{password} where phone=#{phone}
+    </update>
+    <insert id="insertRole">
+        insert into user_role (user_id,role_id) values (#{userId},#{roleId})
+    </insert>
+    <select id="getRoles" resultType="RoleBean">
+        select role,r.id from roles r
+        join user_role ur
+        on r.id=ur.role_id
+        where ur.user_id=#{userId};
+    </select>
+    <update id="changePhone">
+        update users set phone=#{phone} where id=#{id}
+    </update>
+    <update id="changeState">
+        update users set state=#{state}
+        <where>
+            <if test="id!=null">
+                id=#{id}
+            </if>
+            <if test="phone!=null">
+                and phone=#{phone}
+            </if>
+        </where>
+    </update>
+    <select id="getUsers" resultMap="users">
+        select u.id uid,name,phone,r.id rid,state,role from user_role ur
+        join users u
+        on ur.user_id=u.id
+        join roles r
+        on ur.role_id=r.id
+        <where>
+            <if test="id!=null">
+                id=#{id},
+            </if>
+            <if test="phone!=null">
+                and phone=#{phone},
+            </if>
+            <if test="state!=0">
+                and state=#{state}
+            </if>
+            <if test="roleId!=0">
+                and ur.role_id=#{roleId}
+            </if>
+        </where>
+    </select>
+    <update id="changeRole">
+        update user_role set role_id=#{roleId} where user_id=#{userId}
+    </update>
+</mapper>

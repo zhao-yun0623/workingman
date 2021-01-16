@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.workingman.mapper.OrderMapper">
+<insert id="postOrder" useGeneratedKeys="true" keyProperty="id">
+    insert into orders (user_id,user_name,user_phone,place,tower,dorm,food_id,food_name,price,merchant_id,merchant_name,
+    type,number,code,laborer_id,laborer_phone,reward,start_time,state,comment)
+    values (#{userId},#{userName},#{userPhone},#{place},#{tower},#{dorm},#{foodId},#{foodName},#{price},
+    #{merchantId},#{merchantName},#{type},#{number},#{code},#{laborerId},#{laborerPhone},#{reward},#{startTime},#{state},#{comment})
+</insert>
+    <select id="merchantGetOrders" resultType="OrderBean">
+        select * from orders
+        <where>
+            merchant_id=(select id from merchants where user_id=#{userId})
+            <if test="state!=null">
+                and state=#{state}
+            </if>
+            <if test="type!=null">
+                and type=#{type}
+            </if>
+        </where>
+        order by start_time desc
+    </select>
+    <select id="userGetOrders" resultType="OrderBean">
+        select * from orders
+        <where>
+            user_id=#{userId}
+            <if test="state!=null">
+                and state=#{state}
+            </if>
+            <if test="type!=null">
+                and type=#{type}
+            </if>
+        </where>
+        order by start_time desc
+    </select>
+    <update id="changeOrder">
+        update orders
+        <set>
+            <if test="code!=null">
+                code=#{code},
+            </if>
+            <if test="state!=null">
+                state=#{state},
+            </if>
+            <if test="merchantTime!=null">
+                merchant_time=#{merchantTime},
+            </if>
+            <if test="laborerTime!=null">
+                laborer_time=#{laborerTime},
+            </if>
+            <if test="laborerId!=null">
+                laborer_id=#{laborerId},
+            </if>
+            <if test="laborerPhone!=null">
+                laborer_phone=#{laborerPhone}
+            </if>
+        </set>
+        where number =#{number}
+    </update>
+    <select id="getOrderByNumber" resultType="OrderBean">
+        select * from orders where number=#{number}
+    </select>
+    <select id="getLaborerOwnOrder" resultType="OrderBean">
+        select * from orders
+        <where>
+            laborer_id=#{laborerId}
+            <if test="state!=null">
+                and state=#{state}
+            </if>
+            <if test="type!=null">
+                and type=#{type}
+            </if>
+        </where>
+        order by start_time desc
+    </select>
+    <select id="getLaborerOrder" resultType="OrderBean">
+    select * from orders
+    where state=2 and type=2
+</select>
+    <select id="getNowOrder" resultType="OrderBean">
+        select * from orders where state in (1,2,3,4,5)
+        and user_id=#{userId}
+    </select>
+</mapper>

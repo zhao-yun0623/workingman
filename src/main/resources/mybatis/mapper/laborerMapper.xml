@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.workingman.mapper.LaborerMapper">
+<update id="applyForLaborer">
+    update informations set face=#{face},identification=#{identification},state=#{state} where user_id=#{userId}
+</update>
+    <select id="getApplyUsers" resultType="InformationBean">
+        select * from informations where state=#{state}
+    </select>
+</mapper>

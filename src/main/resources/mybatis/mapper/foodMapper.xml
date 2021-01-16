@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.workingman.mapper.FoodMapper">
+
+    <select id="getFoods" resultType="FoodBean">
+        select * from foods
+        where merchant_id=#{merchantId}
+    </select>
+
+    <insert id="insertFood">
+        insert into foods (merchant_id,name,price) select
+        (select id from merchants where merchant=#{merchant}),
+        #{name},#{price}
+    </insert>
+    <select id="getFoodById" resultType="FoodBean">
+        select merchant_id,merchant merchantName,f.id id,name,price
+        from foods f
+        join merchants m
+        on f.merchant_id=m.id
+        where f.id=#{foodId}
+    </select>
+</mapper>

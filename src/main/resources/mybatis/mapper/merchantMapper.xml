@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.workingman.mapper.MerchantMapper">
+
+    <resultMap id="foods" type="MerchantBean">
+        <id column="mid" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="merchant" property="merchant"/>
+        <collection property="foods" ofType="FoodBean">
+            <id column="fid" property="id"/>
+            <result column="name" property="name"/>
+            <result column="price" property="price"/>
+            <result column="mid" property="merchantId"/>
+        </collection>
+    </resultMap>
+    <select id="getFoods" resultMap="foods">
+        select m.id mid,user_id,merchant,f.id fid,name,price
+        from merchants m
+        join foods f
+        on m.id=f.merchant_id
+        <where>
+            <if test="id!=null">
+                m.id=#{id}
+            </if>
+            <if test="merchant">
+                merchant like concat(concat('%',#{merchant}),'%' )
+            </if>
+        </where>
+    </select>
+    <insert id="insert">
+        insert into merchants (merchant,user_id) values (#{merchant},#{userId})
+    </insert>
+</mapper>
